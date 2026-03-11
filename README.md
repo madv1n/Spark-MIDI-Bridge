@@ -1,7 +1,7 @@
 # Spark 40 MIDI Bridge
 
 A lightweight and robust utility to connect MIDI foot controllers to the **Positive Grid Spark 40** amplifier via your computer.
-
+![spark](https://github.com/user-attachments/assets/0aaeafa0-2b30-4143-a534-9a5edcaf4a1c)
 ## Getting Started
 
 ### Prerequisites
