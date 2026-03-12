@@ -1,48 +1,62 @@
 # Spark 40 MIDI Bridge
 
-A lightweight and robust utility to connect MIDI foot controllers to the **Positive Grid Spark 40** amplifier via your computer.
+A lightweight utility to bridge the `M-VAVE Chocolate Plus` controller and `Positive Grid Spark 40` amp using your PC as a "brain".
 
 ![spark](https://github.com/user-attachments/assets/0aaeafa0-2b30-4143-a534-9a5edcaf4a1c)
 
-## Getting Started
+## Why use this bridge?
+Standalone: No need for MidiBerry, loopMIDI, or any other virtual MIDI cables.
 
-### Prerequisites
-The program requires **Python 3.12** or lower.
-* **Windows**: Download from [python.org](https://www.python.org/ftp/python/3.12.7/python-3.12.7-amd64.exe). *Check "Add Python to PATH" during installation.*
-* **macOS**: Verify in Terminal: `python3 --version` or download it from [python.org](https://www.python.org/ftp/python/3.12.7/python-3.12.7-macos11.pkg)
+Direct Link: Connects your pedal directly to the Spark amp via software.
+
+Low Latency: Optimized for real-time performance.
+
+## Connection Modes
+
+The bridge supports two ways to talk to your pedal:
+    USB (Recommended): Lowest latency, rock-solid stability.
+    Bluetooth: Wireless freedom, but requires a stable system Bluetooth stack. 
+
+## Getting Started
 
 ### 1. Download Files
 1.  Click the green **`<> Code`** button at the top of this page.
 2.  Select **`Download ZIP`**.
 3.  Extract the archive to a convenient folder.
 
-### 2. USB Connection (Wired)
-This is the most straightforward and reliable method.
-1. Connect the controller to your computer using a USB cable.
-2. Turn on your controller to the "U" position.
-3. No additional software is required for the computer to recognize the device.
+### 2. Connect the M-VAVE to PC (Bluetooth and USB)
+The "Wake-up" Trick: Windows often keeps the Bluetooth adapter in a "sleep" mode for low-energy devices. To make the Spark Amp visible, you need to "wake up" the Bluetooth stack. The most reliable way is to have your pedal paired with the PC.
+* For USB Mode (Recommended):
+    * Pair the controller via Bluetooth first (Settings -> Devices -> Pair FootCtrlPlus). This is only required once to initialize the scan.
+    * Connect the USB cable
+    * Once the app shows SPARK: ONLINE, the Bluetooth link to the pedal is no longer needed. You can even move the pedal away or rely solely on the cable — the "handshake" with the amp is already established.
+* For Bluetooth Mode:
+    * Pair the controller via Bluetooth first (Settings -> Devices -> Pair FootCtrlPlus).
+    * Keep the controller paired and switched to the "U" position.
+    * The app will handle both the "wake-up" and the MIDI commands wirelessly.
 
-### 3. Bluetooth Connection (Wireless)
-If you prefer to connect your controller to the computer wirelessly:
-1. Turn on your controller to the "U" position.
-2. Pair the controller with the computer.
-3. Install [MIDIberry](https://apps.microsoft.com/detail/9n39720h2m05?rtc=1&hl=en-US&gl=US) application (to route the Bluetooth MIDI signal).
-4. Install [loopMIDI](https://www.tobias-erichsen.de/software/loopmidi.html) (to create a virtual MIDI port).
-5. Open the loopMIDI. To create a MIDI Port click **`+`**
-6. Open the MIDIBerry. From the **`INPUT`** field select your controller - **`FootCtrlPlus(Bluetooth MIDI..)`**. From the **`OUTPUT`** field select the **`loopMIDI Port [1]`**
+### 3. Run the App
+1. Ensure the controller is paired (to trigger the BLE scan).
+2. Make sure your `Spark 40` is turned on and NOT connected to the Spark App on your phone (Spark can only talk to one "Master" at a time).
+3. Run the `SparMidiBridge.exe`.
 
-### 4. One-Click Launch
+For **`Windows`** run the `SparkMidiBridge.exe`.
 
-For **`Windows`** run the `SparkMIDIBridge.bat`. First run will auto-install all necessary libraries - `bleak`, `pygame`, and `Pillow`.
+For **`macOS`** `In work`
 
-For **`macOS`** Users:
-1. Open Terminal, type `chmod +x `, (and be sure to press space after +x) and drag the `.command` file into the window. Press Enter.
-2. If you see a "damaged file" error, run:
-`sudo xattr -rd com.apple.quarantine [drag_file_here]`
-
-Statuses will be **`MIDI: READY`** and **`SPARK: ONLINE`**
+4. Wait for the green lights **`PEDAL: READY`** and **`SPARK: ONLINE`**
+5. Have fun
 
 ## Troubleshooting
 
-* **SPARK: OFF**: Ensure Spark is ON and **not** connected to the official mobile app. Restart the Spark and `SparkMIDIBridge.bat`.
-* **MIDI: OFF**: Restart the controller and the `SparkMIDIBridge.bat`.
+In work...
+
+## Source Code
+For developers and advanced users, the raw Python scripts are available in the `/lightweight` folder. You can run them directly if you have at least `Python 3.13` installed with the required libraries (bleak, pygame, winrt). `.bat` will install the required libraries
+
+## System Requirements
+Tested on: Windows 11
+
+Hardware: Spark 40 Amp, M-VAVE Chocolate Plus
+
+Backend: Bleak (BLE) & Pygame (MIDI)
