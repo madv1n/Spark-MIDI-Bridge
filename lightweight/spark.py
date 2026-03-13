@@ -4,6 +4,7 @@ import json
 import threading
 import asyncio
 import pygame.midi
+import multiprocessing
 
 # Windows-specific imports
 try:
@@ -18,10 +19,11 @@ from bleak import BleakScanner, BleakClient
 import tkinter as tk
 from tkinter import ttk, messagebox
 
+# Configuration
 CONFIG_FILE = "spark_config.json"
 WRITE_UUID = "0000ffc1-0000-1000-8000-00805f9b34fb"
-# Spark's hardware MAC prefix (helps find it when name is hidden)
-SPARK_MAC_PREFIX = "F7:EB:ED" 
+# Hardcoded fallback MAC prefix for Spark 40
+SPARK_MAC_PREFIX = "F7:EB:ED"
 
 SPARK_ACTIONS = {
     "Preset 1": "01fe000053fe1a000000000000000000f0013a150138000000f7",
@@ -37,7 +39,12 @@ class SparkMidiApp:
         self.root.geometry("570x340")
         self.root.configure(bg="#f5f5f5")
         
-        self.mapping = { f"btn{i}": tk.StringVar(value=f"Preset {i if i<=4 else 1}") for i in range(1, 10) }
+        if os.path.exists("icon.ico"):
+            try: self.root.iconbitmap("icon.ico")
+            except: pass
+        
+        # Mapping for 128 MIDI buttons
+        self.mapping = { f"btn{i}": tk.StringVar(value=f"Preset {i if i<=4 else 1}") for i in range(0, 128) }
         
         self.spark_client = None
         self.midi_usb_in = None    
@@ -50,7 +57,6 @@ class SparkMidiApp:
         self.loop = asyncio.new_event_loop()
         threading.Thread(target=self.start_async_loop, daemon=True).start()
         
-        # Parallel tasks for non-blocking discovery
         asyncio.run_coroutine_threadsafe(self.spark_search_loop(), self.loop)
         asyncio.run_coroutine_threadsafe(self.midi_search_loop(), self.loop)
 
@@ -62,9 +68,9 @@ class SparkMidiApp:
         
         st_frame = tk.Frame(main, bg="#f5f5f5")
         st_frame.pack(pady=2)
-        self.midi_lbl = tk.Label(st_frame, text="PEDAL: OFF", fg="#c0392b", bg="#f5f5f5", font=("Arial", 9, "bold"))
+        self.midi_lbl = tk.Label(st_frame, text="PEDAL: DISCONNECTED", fg="#c0392b", bg="#f5f5f5", font=("Arial", 9, "bold"))
         self.midi_lbl.pack(side="left", padx=20)
-        self.spark_lbl = tk.Label(st_frame, text="SPARK: OFF", fg="#c0392b", bg="#f5f5f5", font=("Arial", 9, "bold"))
+        self.spark_lbl = tk.Label(st_frame, text="SPARK: DISCONNECTED", fg="#c0392b", bg="#f5f5f5", font=("Arial", 9, "bold"))
         self.spark_lbl.pack(side="left", padx=20)
 
         grid = tk.Frame(main, bg="white", relief="groove", borderwidth=1)
@@ -104,81 +110,85 @@ class SparkMidiApp:
                 except Exception as e:
                     self.log(f"Send Error: {e}")
 
-    # --- WINDOWS ONLY BT MIDI HANDLER ---
     def on_bt_midi_message(self, sender, args):
         if not IS_WINDOWS: return
         try:
             reader = DataReader.from_buffer(args.message.raw_data)
             data = [reader.read_byte() for _ in range(reader.unconsumed_buffer_length)]
             if len(data) >= 2:
-                # data[1] is usually the button ID in MIDI Program Change
-                asyncio.run_coroutine_threadsafe(self.send_to_spark(data[1]), self.loop)
+                status, data1 = data[0], data[1]
+                if (176 <= status <= 207):
+                    asyncio.run_coroutine_threadsafe(self.send_to_spark(data1), self.loop)
         except Exception as e:
             self.log(f"BT MIDI Error: {e}")
 
     async def spark_search_loop(self):
-        """Dedicated loop for Spark Amp connection"""
+        """Robust Search: Name + MAC Fallback. Metadata removed for compatibility."""
         while True:
             if not self.spark_client or not self.spark_client.is_connected:
                 try:
                     self.spark_lbl.config(text="SPARK: SCANNING", fg="#f39c12")
-                    devs = await BleakScanner.discover(timeout=3.0)
+                    # Shorter timeout for faster retries on Windows
+                    devs = await BleakScanner.discover(timeout=4.0)
                     
-                    # Enhanced Filter: Search by Name OR Hardware MAC prefix
-                    spark = next((d for d in devs if (d.name and "Spark" in d.name) or (d.address.upper().startswith(SPARK_MAC_PREFIX))), None)
+                    target = None
+                    for d in devs:
+                        name = str(d.name if d.name else "Unknown").lower()
+                        address = str(d.address).upper()
+                        
+                        # Match by name OR known MAC prefix
+                        if "spark" in name or address.startswith(SPARK_MAC_PREFIX):
+                            target = d
+                            break
                     
-                    if spark:
-                        self.log(f"Spark Found: {spark.name} [{spark.address}]")
-                        self.spark_client = BleakClient(spark.address)
+                    if target:
+                        self.log(f"Connecting to: {target.name} [{target.address}]")
+                        self.spark_client = BleakClient(target.address)
                         await self.spark_client.connect()
                         self.spark_lbl.config(text="SPARK: ONLINE", fg="#27ae60")
-                        self.log("Connected to Spark successfully.")
+                        self.log("Spark connection established.")
+                    else:
+                        self.log(f"Scanning... ({len(devs)} devices found)")
                 except Exception as e:
-                    self.spark_lbl.config(text="SPARK: OFF", fg="#c0392b")
+                    self.spark_lbl.config(text="SPARK: DISCONNECTED", fg="#c0392b")
+                    self.log(f"BLE Error: {e}")
                     self.spark_client = None
             await asyncio.sleep(5)
 
     async def midi_search_loop(self):
-        """Dedicated loop for Pedals (USB and Bluetooth)"""
         while True:
-            # 1. USB Connection Check (Cross-platform via Pygame)
             if not self.midi_usb_in:
                 for i in range(pygame.midi.get_count()):
                     info = pygame.midi.get_device_info(i)
                     if info and info[2] and any(x in info[1].decode().lower() for x in ["foot", "midi", "m-vave"]):
                         try:
                             self.midi_usb_in = pygame.midi.Input(i)
-                            self.log(f"USB Pedal Connected: {info[1].decode()}")
+                            self.log(f"USB Pedal Linked: {info[1].decode()}")
                             self.midi_lbl.config(text="PEDAL: USB READY", fg="#27ae60")
                         except: pass
             
-            # 2. Poll USB if active
             if self.midi_usb_in:
                 try:
                     if self.midi_usb_in.poll():
                         for event in self.midi_usb_in.read(10):
-                            # MIDI event format: [[status, data1, data2, data3], timestamp]
-                            await self.send_to_spark(event[0][1])
+                            status, data1 = event[0][0], event[0][1]
+                            if (176 <= status <= 207):
+                                await self.send_to_spark(data1)
                 except:
-                    self.midi_usb_in.close()
                     self.midi_usb_in = None
-                    self.midi_lbl.config(text="PEDAL: OFF", fg="#c0392b")
+                    self.midi_lbl.config(text="PEDAL: DISCONNECTED", fg="#c0392b")
 
-            # 3. Bluetooth MIDI Check (Windows specific using WinRT)
             if IS_WINDOWS and not self.midi_bt_port and not self.midi_usb_in:
                 try:
                     all_devs = await enumeration.DeviceInformation.find_all_async()
-                    # Looking for common BT pedal names
-                    target = next((d for d in all_devs if ("FootCtrl" in d.name or "M-VAVE" in d.name) and "MIDI" in d.name), None)
+                    target = next((d for d in all_devs if d.name and any(x in d.name.lower() for x in ["footctrl", "m-vave"]) and "midi" in d.name.lower()), None)
                     if target:
                         port = await midi.MidiInPort.from_id_async(target.id)
                         if port:
                             self.midi_bt_port = port
                             self.midi_bt_port.add_message_received(self.on_bt_midi_message)
                             self.midi_lbl.config(text="PEDAL: BT READY", fg="#27ae60")
-                            self.log(f"Bluetooth Pedal Linked: {target.name}")
                 except: pass
-            
             await asyncio.sleep(0.1)
 
     def load_config(self):
@@ -196,6 +206,7 @@ class SparkMidiApp:
         messagebox.showinfo("Success", "Configuration saved!")
 
 if __name__ == "__main__":
+    multiprocessing.freeze_support()
     root = tk.Tk()
     app = SparkMidiApp(root)
     root.mainloop()
