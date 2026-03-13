@@ -59,3 +59,8 @@ Tested on: Windows 11
 Hardware: Spark 40 Amp, M-VAVE Chocolate Plus
 
 Backend: Bleak (BLE), Pygame (MIDI), winrt
+
+## Disclaimer
+**Use this software at your own risk.** - This project is NOT affiliated with, authorized, or endorsed by Positive Grid.
+- The author is not responsible for any potential damage to your amplifier, MIDI hardware, or computer.
+- Always test your setup before using it in a live performance.
