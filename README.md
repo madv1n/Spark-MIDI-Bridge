@@ -2,7 +2,7 @@
 
 A lightweight utility to bridge the `M-VAVE Chocolate Plus` controller and `Positive Grid Spark 40` amp using your PC as a "brain". At this stage the app allows to change presets only
 <div align="center"><img src="https://github.com/user-attachments/assets/8e62b142-152c-44df-bfa0-5c016c707819"></div>
-<div align="center"><img src="https://github.com/user-attachments/assets/0aaeafa0-2b30-4143-a534-9a5edcaf4a1c"></div>
+<div align="center"><img src="https://github.com/user-attachments/assets/7ad0ae02-5e25-42e6-abdd-102b3984a81b"></div>
 
 ## Why use this bridge?
 Standalone: No need for MidiBerry, loopMIDI, or any other virtual MIDI cables.
@@ -38,9 +38,8 @@ The "Wake-up" Trick: Windows often keeps the Bluetooth adapter in a "sleep" mode
 ### 3. Run the App
 1. Ensure the controller is paired (to trigger the BLE scan).
 2. Make sure your `Spark 40` is turned on and NOT connected to the Spark App on your phone (Spark can only talk to one "Master" at a time).
-3. Run the `SparMidiBridge.exe`.
+3. Run the `SparMidiBridge.exe`. `Windows`
 
-For **`Windows`** run the `SparkMidiBridge.exe`.
 
 For **`macOS`** `In work`
 
