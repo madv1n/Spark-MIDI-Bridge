@@ -64,3 +64,5 @@ Backend: Bleak (BLE), Pygame (MIDI), winrt
 **Use this software at your own risk.** - This project is NOT affiliated with, authorized, or endorsed by Positive Grid.
 - The author is not responsible for any potential damage to your amplifier, MIDI hardware, or computer.
 - Always test your setup before using it in a live performance.
+
+<a href="https://www.buymeacoffee.com/pk_rpforge" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px;width: 217px !important;" ></a>
