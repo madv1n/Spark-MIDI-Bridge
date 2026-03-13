@@ -66,6 +66,6 @@ Backend: Bleak (BLE), Pygame (MIDI), winrt
 - Always test your setup before using it in a live performance.
 
 ## Support my project
-If you find this project useful and want to support its development and my music channel, you can buy me a coffee here:
+If this tool helps you, you can support further development:
 
 <a href="https://www.buymeacoffee.com/pk_rpforge" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px;width: 217px !important;" ></a>
