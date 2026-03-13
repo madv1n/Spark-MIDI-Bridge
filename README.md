@@ -51,11 +51,11 @@ For **`macOS`** `In work`
 In work...
 
 ## Source Code
-For developers and advanced users, the raw Python scripts are available in the `/lightweight` folder. You can run them directly if you have at least `Python 3.13` installed with the required libraries (bleak, pygame, winrt). `.bat` will install the required libraries
+For developers and advanced users, the raw Python scripts are available in the `/lightweight` folder. You can run them directly if you have at least `Python 3.13` installed with the required libraries (bleak, pygame, winrt).
 
 ## System Requirements
 Tested on: Windows 11
 
 Hardware: Spark 40 Amp, M-VAVE Chocolate Plus
 
-Backend: Bleak (BLE) & Pygame (MIDI)
+Backend: Bleak (BLE), Pygame (MIDI), winrt
