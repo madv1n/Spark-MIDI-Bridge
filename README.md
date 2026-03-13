@@ -1,6 +1,6 @@
 # Spark 40 MIDI Bridge
 
-A lightweight utility to bridge the `M-VAVE Chocolate Plus` controller and `Positive Grid Spark 40` amp using your PC as a "brain".
+A lightweight utility to bridge the `M-VAVE Chocolate Plus` controller and `Positive Grid Spark 40` amp using your PC as a "brain". At this stage the app allows to change presets only
 <div align="center"><img src="https://github.com/user-attachments/assets/8e62b142-152c-44df-bfa0-5c016c707819"></div>
 <div align="center"><img src="https://github.com/user-attachments/assets/0aaeafa0-2b30-4143-a534-9a5edcaf4a1c"></div>
 
