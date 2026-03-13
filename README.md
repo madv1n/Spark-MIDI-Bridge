@@ -1,8 +1,8 @@
 # Spark 40 MIDI Bridge
 
 A lightweight utility to bridge the `M-VAVE Chocolate Plus` controller and `Positive Grid Spark 40` amp using your PC as a "brain".
-
-![spark](https://github.com/user-attachments/assets/0aaeafa0-2b30-4143-a534-9a5edcaf4a1c)
+<div align="center">![chain](https://github.com/user-attachments/assets/8e62b142-152c-44df-bfa0-5c016c707819)</div>
+<div align="center">![spark](https://github.com/user-attachments/assets/0aaeafa0-2b30-4143-a534-9a5edcaf4a1c)</div>
 
 ## Why use this bridge?
 Standalone: No need for MidiBerry, loopMIDI, or any other virtual MIDI cables.
