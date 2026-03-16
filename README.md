@@ -67,6 +67,25 @@ Backend: Bleak (BLE), Pygame (MIDI), winrt
 ## Tested & Verified Combinations
 * M-VAVE Chocolate Plus - Positive Grid Spark (40) firmware V1.10.8.25 ✅
 
+## 🧪 Community Testing (Help Needed!)
+I want this bridge to be a universal tool for the Spark community. If you own different hardware, you can help by providing its system identity.
+
+How to help:
+* Connect your hardware (MIDI pedal or different Spark amp) to your computer (BT and USB).
+
+Report the exact Device Name:
+
+* In the Bluetooth & Devices settings, find the exact string name of your device (e.g., M-VAVE Chocolate...FootCtrlPlus, SINCO...).
+
+Open an Issue: Use the "New Hardware Support" tag and paste the device names there.
+
+Currently seeking data for:
+* Amps: Spark 2, Spark GO, Spark MINI, Spark LIVE.
+
+* Pedals: Line 6 FBV, Behringer FCB1010, IK Multimedia BlueBoard, etc.
+
+Your contribution will help me add "Plug & Play" support for these devices in the next update!
+
 ## Disclaimer
 **Use this software at your own risk.** - This project is NOT affiliated with, authorized, or endorsed by Positive Grid.
 - The author is not responsible for any potential damage to your amplifier, MIDI hardware, or computer.
