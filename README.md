@@ -28,7 +28,26 @@ The bridge supports two ways to talk to your pedal:
 2.  Select **`Download ZIP`**.
 3.  Extract the archive to a convenient folder.
 
-### 2. Connect the M-VAVE to PC (Bluetooth and USB)
+### 2. MIDI Setup Guide for Spark Bridge
+To ensure the program works correctly, the buttons on your pedal must send unique signals. If the app shows the same "Button ID" for every press, please update your pedal settings via CubeSuite (or your pedal's configuration app) as follows:
+1. Button Mapping (IDs)
+Each physical button (A, B, C, D) must have its own unique number. Recommended settings:
+    * Button A: ID 0 (or 1)
+    * Button B: ID 1 (or 2)
+    * Button C: ID 2 (or 3)
+    * Button D: ID 3 (or 4)
+2. Message Type (Mode)
+The Spark Bridge app is universal and supports both major MIDI message types. You can use either:
+    * CC (Control Change): The most common "stompbox" mode.
+    * PC (Program Change): Often used for preset switching.
+3. Value (For CC Mode)
+    * If you are using CC mode, make sure the "Value" is set to 127 (this ensures the signal is strong enough to be detected as a "press").
+How to Verify
+Connect your pedal to your PC.
+* Press buttons A, B, C, and D one by one while watching the Log window in the Spark Bridge app.
+You should see different numbers appear: Action: BTN 0..., Action: BTN 1..., etc.
+
+### 3. Connect the M-VAVE to PC (Bluetooth and USB)
 The "Wake-up" Trick: Windows often keeps the Bluetooth adapter in a "sleep" mode for low-energy devices. To make the Spark Amp visible, you need to "wake up" the Bluetooth stack. The most reliable way is to have your pedal paired with the PC.
 * For USB Mode (Recommended):
     * Pair the controller via Bluetooth first (Settings -> Devices -> Pair FootCtrlPlus). This is only required once to initialize the scan.
@@ -39,7 +58,7 @@ The "Wake-up" Trick: Windows often keeps the Bluetooth adapter in a "sleep" mode
     * Keep the controller paired and switched to the "U" position.
     * The app will handle both the "wake-up" and the MIDI commands wirelessly.
 
-### 3. Run the App
+### 4. Run the App
 1. Ensure the controller is paired (to trigger the BLE scan).
 2. Make sure your `Spark 40` is turned on and NOT connected to the Spark App on your phone (Spark can only talk to one "Master" at a time).
 3. Run the `SparMidiBridge.exe`. `Windows`
