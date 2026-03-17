@@ -74,7 +74,7 @@ For **`macOS`** `In work`
 In work...
 
 ## Source Code
-For developers and advanced users, the raw Python scripts are available in the `/lightweight` folder. You can run them directly if you have at least `Python 3.13` installed with the required libraries (bleak, pygame, winrt).
+For developers and advanced users, the raw Python scripts are available in the `/src` folder. You can run them directly if you have at least `Python 3.13` installed with the required libraries (bleak, pygame, winrt).
 
 ## System Requirements
 Tested on: Windows 11
@@ -104,6 +104,10 @@ Currently seeking data for:
 * Pedals: Line 6 FBV, Behringer FCB1010, IK Multimedia BlueBoard, etc.
 
 Your contribution will help me add "Plug & Play" support for these devices in the next update!
+
+## 📜 Credits & Acknowledgments
+This project uses research and protocol documentation from the following open-source projects:
+* **[SparkMIDI](https://github.com/paulhamsh/SparkMIDI)** — for the original Sysex command structures.
 
 ## Disclaimer
 **Use this software at your own risk.** - This project is NOT affiliated with, authorized, or endorsed by Positive Grid.
