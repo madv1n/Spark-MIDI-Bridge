@@ -1,4 +1,4 @@
-# Spark 40 MIDI Bridge
+# Spark MIDI Bridge
 
 A lightweight utility to bridge the `M-VAVE Chocolate Plus` controller and `Positive Grid Spark 40` amp using your PC as a "brain". At this stage the app allows to change presets only
 
@@ -6,7 +6,7 @@ Note on `Spark 2` Support:
 The bridge is designed to detect any device with "Spark" in its name. While it was primarily developed for Spark 40, it should theoretically discover and connect to Spark 2 automatically. If you own a Spark 2, please help us by testing it and reporting your results!
 
 <div align="center"><img src="https://github.com/user-attachments/assets/8e62b142-152c-44df-bfa0-5c016c707819"></div>
-<div align="center"><img src="https://github.com/user-attachments/assets/7ad0ae02-5e25-42e6-abdd-102b3984a81b"></div>
+<div align="center"><img src="https://github.com/user-attachments/assets/e9241080-751b-482c-9f01-369cc4a2dffa"></div>
 
 ## Why use this bridge?
 Standalone: No need for MidiBerry, loopMIDI, or any other virtual MIDI cables.
