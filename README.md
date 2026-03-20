@@ -14,33 +14,28 @@ A lightweight, one-click utility to connect any MIDI controller to `Positive Gri
 ## Getting Started
 
 ### 1. Download Files
-1.  Click the green **`<> Code`** button at the top of this page.
+1.  Click the green **`<> Code`** button at the top of this page. or dowload file from Release Page *[(Latest version)](https://github.com/madv1n/Spark-MIDI-Bridge/releases)*
 2.  Select **`Download ZIP`**.
 3.  Extract the archive to a convenient folder.
 
-### 2. Connect the MIDI to PC (Bluetooth and USB)
+## 📖 Quick Start
 
-* For USB Mode (Recommended):
+> [!IMPORTANT]
+> **For M-VAVE Users:** You **MUST** pair your pedal via Windows Bluetooth settings (`FootCtrlPlus` device) **even if you are using a USB connection**. 
+> If you don't pair it, the pedal will constantly enter "searching mode" (blinking light), which can cause connection instability and lag. Pairing it once ensures the pedal stays "locked" and stable.
 
-      Note for M-VAVE users: Pair the controller via Bluetooth first (Settings -> Devices -> Pair FootCtrlPlus).
-      
-    * Connect the USB cable
-* For Bluetooth Mode:
-    * Pair the controller via Bluetooth first (Settings -> Devices -> Pair FootCtrlPlus).
-    * Keep the controller paired.
+1. **Prepare your Amp:** Turn on your Spark. Ensure it's **NOT** connected to the Spark mobile app.
+2. **Connect MIDI:** Plug your controller into the PC (USB is recommended for stability).
+3. **Run:** Open `SparkMidiBridge.exe`.
+4. Select the amp model from the drop-down list.
+5. **Done:** Wait for `SPARK: ONLINE` and `PEDAL: READY`.
 
-### 4. Run the App
-1. Ensure the controller is paired (to trigger the BLE scan).
-2. Make sure your `Spark` is turned on and NOT connected to the Spark App on your phone (Spark can only talk to one "Master" at a time).
-3. Run the `SparMidiBridge.exe`. `Windows`
-
+`Ensure your pedal buttons send unique IDs (0, 1, 2, 3 or 1, 2, 3, 4) via CubeSuite. If the app sees the same "Button ID" for all presses, check your pedal's CC/PC settings`
+    
 For **`macOS`** `In work`
 
-4. Wait for the green lights **`PEDAL: READY`** and **`SPARK: ONLINE`**
-5. Have fun
-
 ## 🛠 Hardware Compatibility
-*I am actively looking for testers for models marked with ⏳!*
+*I am actively looking for testers for other models!*
 
 | Device | Status | Notes |
 | :--- | :--- | :--- |
