@@ -56,10 +56,15 @@ If you own a **Spark 2, MINI, or GO**, you can help even if you don't have a MID
 This project uses research and protocol documentation from the following open-source projects:
 * **[SparkMIDI](https://github.com/paulhamsh/SparkMIDI)** — for the original Sysex command structures.
 
-## Disclaimer
-**Use this software at your own risk.** - This project is NOT affiliated with, authorized, or endorsed by Positive Grid.
-- The author is not responsible for any potential damage to your amplifier, MIDI hardware, or computer.
-- Always test your setup before using it in a live performance.
+## ⚖️ Legal Disclaimer & Safety
+
+**USE THIS SOFTWARE AT YOUR OWN RISK.** 1. **Not Official:** This project is an independent, community-driven tool and is **NOT affiliated with, authorized, maintained, or endorsed by Positive Grid LLC**. 
+2. **Trademarks:** "Spark", "Positive Grid", "Spark LIVE", and all related product names are trademarks or registered trademarks of Positive Grid LLC. They are used here solely for **interoperability** and identification purposes.
+3. **No Liability:** The author is not responsible for any potential damage to your amplifier, MIDI hardware, computer, or for any loss of data.
+4. **Experimental:** Support for newer models (Spark 2, Spark LIVE) is based on community research and is considered **experimental**.
+5. **Testing:** Always test your setup thoroughly before using it in a live performance or critical environment.
+
+This software is provided "as is" under the **GPL-3.0 License**, without warranty of any kind.
 
 ## Support my project
 If this tool helps you, you can support further development:
