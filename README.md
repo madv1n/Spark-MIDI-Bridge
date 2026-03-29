@@ -3,13 +3,14 @@
 A lightweight, one-click utility to connect any MIDI controller to `Positive Grid Spark` amps using your PC as the "brain".
 
 <div align="center"><img src="https://github.com/user-attachments/assets/8e62b142-152c-44df-bfa0-5c016c707819"></div>
-<div align="center"><img src="https://github.com/user-attachments/assets/c947fedc-e054-4d34-92a9-4afb963a397c"></div>
+<div align="center"><img src="https://github.com/user-attachments/assets/9191e1df-6f42-42dc-8292-ba02661552dd"></div>
 
 ## Versions
 | Version | Features | Status | Recommended for |
 | :--- | :--- | :--- | :--- |
-| **[v1.0.2. (Latest)](https://github.com/madv1n/Spark-MIDI-Bridge/releases)** | **Universal MIDI Support** | **Stable** | **Everyone (Best choice)** | | **Universa MIDI Support** | **Stable** | **Everyone (Best choice)** |
-| **v1.0.0.** | Initial release (M-VAVE only) | Legacy | Only for M-VAVE Chocolate |
+| **[v1.1.0 (Latest)](https://github.com/madv1n/Spark-MIDI-Bridge/releases)** | **Universal MIDI Support** | **Stable** | **Everyone (Best choice)** | | **Universa MIDI Support** | **Stable** | **Everyone (Best choice)** |
+| **v1.0.2** | **Universal MIDI Support** | **Stable** | **Everyone (Best choice)** | | **Universa MIDI Support** | **Stable** | **Everyone (Best choice)** |
+| **v1.0.0** | Initial release (M-VAVE only) | Legacy | Only for M-VAVE Chocolate |
 
 ## Getting Started
 
@@ -28,10 +29,9 @@ A lightweight, one-click utility to connect any MIDI controller to `Positive Gri
 2. **Connect MIDI:** Plug your controller into the PC (USB is recommended for stability).
 3. **Run:** Open `SparkMidiBridge.exe`.
 4. Select the amp model from the drop-down list.
-5. **Done:** Wait for `SPARK: ONLINE` and `PEDAL: READY`.
+5. Easy Mapping (Learn Mode) - Click the LEARN button under any preset and press the physical button on your MIDI controller to link them instantly. This allows you to use your pedal’s current settings without any hardware reconfiguration. (Note: Click SAVE CONFIGURATION to store your custom layout permanently).
+6. **Done:** Wait for `SPARK: ONLINE` and `PEDAL: READY`.
 
-`Ensure your pedal buttons send unique IDs (0, 1, 2, 3 or 1, 2, 3, 4) via CubeSuite. If the app sees the same "Button ID" for all presses, check your pedal's CC/PC settings`
-    
 For **`macOS`** `In work`
 
 ## 🛠 Hardware Compatibility
@@ -40,17 +40,17 @@ For **`macOS`** `In work`
 | Device | Status | Notes |
 | :--- | :--- | :--- |
 | **Spark 40** | ✅ Working | Fully tested by developer |
-| **Spark 2** | ⏳ Testing | Should connect automatically. Need data! |
-| **Spark MINI** | ⏳ Testing | Need confirmation on Bluetooth ID. |
-| **Spark GO** | ⏳ Testing | Need confirmation on Bluetooth ID. |
-| **M-VAVE Chocolate** | ✅ Working | Best experience via USB or Bluetooth. |
+| **Spark 2** | ✅ Working | Supports preset switching |
+| **Spark MINI** | ⏳ Testing | Need more data |
+| **Spark GO** | ⏳ Testing | Need more data |
 
 ## 🧪 How to help
-If you own a **Spark 2, MINI, or GO**, you can help even if you don't have a MIDI pedal:
+If you own a **MINI, or GO**, you can help even if you don't have a MIDI pedal:
 1. Run the app with your amp turned on.
 2. Change the amp model from the drop-down list
 2. Wait and check if the log says `SPARK: ONLINE`.
-3. If it doesn't, please [Open an Issue](https://github.com/madv1n/Spark-MIDI-Bridge/issues) and tell me your amp model and how it's named in your Windows Bluetooth settings.
+3. Try to change the presets.
+4. If it doesn't, please [Open an Issue](https://github.com/madv1n/Spark-MIDI-Bridge/issues) and tell me your amp model and how it's named in your Windows Bluetooth settings.
 
 ## 📜 Credits & Acknowledgments
 This project uses research and protocol documentation from the following open-source projects:
