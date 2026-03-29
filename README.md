@@ -6,11 +6,11 @@ A lightweight, one-click utility to connect any MIDI controller to `Positive Gri
 <div align="center"><img src="https://github.com/user-attachments/assets/9191e1df-6f42-42dc-8292-ba02661552dd"></div>
 
 ## Versions
-| Version | Features | Status | Recommended for |
-| :--- | :--- | :--- | :--- |
-| **[v1.1.0 (Latest)](https://github.com/madv1n/Spark-MIDI-Bridge/releases)** | **Universal MIDI Support** | **Stable** | **Everyone (Best choice)** | | **Universa MIDI Support** | **Stable** | **Everyone (Best choice)** |
-| **v1.0.2** | **Universal MIDI Support** | **Stable** | **Everyone (Best choice)** | | **Universa MIDI Support** | **Stable** | **Everyone (Best choice)** |
-| **v1.0.0** | Initial release (M-VAVE only) | Legacy | Only for M-VAVE Chocolate |
+| Version | Features |
+| :--- | :--- |
+| **[v1.1.0 (Latest)](https://github.com/madv1n/Spark-MIDI-Bridge/releases)** | **Spark 2 support, easy mapping mode** |
+| **v1.0.2** | **Universal MIDI Support. Now supports every BT/USB Midi** |
+| **v1.0.0** | Initial release (M-VAVE only) |
 
 ## Getting Started
 
