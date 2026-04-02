@@ -44,15 +44,16 @@ For **`macOS`** `In work`
 | **Spark MINI** | ⏳ Testing | Need more data |
 | **Spark GO** | ⏳ Testing | Need more data |
 
-## 🧪 How to help
+## 🧪 How to Help
 If you own a **MINI, or GO**, you can help even if you don't have a MIDI pedal.
 
 Since different Spark amps may use varying Internal Model IDs, you might need to calibrate the communication profile:
 
-1. Download and launch `SparkScanner.exe`. Run the application and verify the status shows `SPARK: ONLINE`.
-2. Protocol Discovery: Click `START SCAN`. The utility will cycle through known protocol layers to find a match for your specific hardware.
-3. Completion: Observe the Amp's preset LEDs. Once they toggle, press "STOP". The utility will lock the identified Model ID for your configuration.
-4. Please [Open an Issue](https://github.com/madv1n/Spark-MIDI-Bridge/issues) and tell me which protocols are changing the presets.
+1. Download and launch `SparkScanner.exe`.
+2. Run the application and verify the status shows `SPARK: ONLINE`.
+3. Click `START SCAN`. The utility will cycle through known protocol layers to find a match for your specific hardware.
+4. Wait until presets start switching. Once they toggle, press `STOP`. The utility will lock the identified Model ID for your configuration.
+5. Please [Open an Issue](https://github.com/madv1n/Spark-MIDI-Bridge/issues) and tell me which protocols are changing the presets or report the results here: `rnp.forge@gmail.com`
 
 ## 📜 Credits & Acknowledgments
 This project uses research and protocol documentation from the following open-source projects:
