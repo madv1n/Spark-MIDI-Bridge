@@ -52,7 +52,7 @@ Since different hardware revisions of the Spark series may use varying Internal 
 1. Launch `SparkScanner.exe`: Execute the bridge application and verify the status shows `SPARK: ONLINE`.
 2. Protocol Discovery: Click "START SCAN". The utility will cycle through known protocol layers to find a match for your specific hardware.
 3. Completion: Observe the Amp's preset LEDs. Once they toggle, press "STOP". The utility will lock the identified Model ID for your configuration.
-4. If it doesn't, please [Open an Issue](https://github.com/madv1n/Spark-MIDI-Bridge/issues) and tell me your amp model.
+4. Please [Open an Issue](https://github.com/madv1n/Spark-MIDI-Bridge/issues) and tell me which protocols are changing the presets.
 
 ## 📜 Credits & Acknowledgments
 This project uses research and protocol documentation from the following open-source projects:
