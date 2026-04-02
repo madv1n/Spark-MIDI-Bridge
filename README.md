@@ -49,8 +49,8 @@ If you own a **MINI, or GO**, you can help even if you don't have a MIDI pedal.
 
 Since different hardware revisions of the Spark series may use varying Internal Model IDs, you might need to calibrate the communication profile:
 
-1. Launch `SparkScanner.exe`: Execute the bridge application and verify the status shows `SPARK: ONLINE`.
-2. Protocol Discovery: Click "START SCAN". The utility will cycle through known protocol layers to find a match for your specific hardware.
+1. Download and launch `SparkScanner.exe`. Run the application and verify the status shows `SPARK: ONLINE`.
+2. Protocol Discovery: Click `START SCAN`. The utility will cycle through known protocol layers to find a match for your specific hardware.
 3. Completion: Observe the Amp's preset LEDs. Once they toggle, press "STOP". The utility will lock the identified Model ID for your configuration.
 4. Please [Open an Issue](https://github.com/madv1n/Spark-MIDI-Bridge/issues) and tell me which protocols are changing the presets.
 
