@@ -73,3 +73,4 @@ This software is provided "as is" under the **GPL-3.0 License**, without warrant
 If this tool helps you, you can support further development:
 
 <a href="https://www.buymeacoffee.com/pk_rpforge" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px;width: 217px !important;" ></a>
+<a href='https://ko-fi.com/Z8Z01XS6B0' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi2.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
