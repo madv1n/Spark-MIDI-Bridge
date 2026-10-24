@@ -15,10 +15,12 @@ jobs:
 
       - run: |
           python3 -m pip install --upgrade pip
-          pip3 install bleak pygame pyinstaller
+          pip3 install -r requirements.txt pyinstaller
 
       - run: |
           pyinstaller --noconfirm --onedir --windowed --name "SparkMidiBridge" "src/1.2.0. Spark 40, Spark 2, Spark Go/SparkMidiBridge_v1.2.0.py"
+          /usr/libexec/PlistBuddy -c "Add :NSBluetoothAlwaysUsageDescription string Spark MIDI Bridge uses Bluetooth to connect to your Spark amplifier." dist/SparkMidiBridge.app/Contents/Info.plist
+          codesign --force --deep --sign - dist/SparkMidiBridge.app
           cd dist
           zip -r SparkMidiBridge_v1.2.0_macOS.zip SparkMidiBridge.app
 

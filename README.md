@@ -33,7 +33,23 @@ A lightweight, one-click utility to connect any MIDI controller to `Positive Gri
 5. Easy Mapping (Learn Mode) - Click the LEARN button under any preset and press the physical button on your MIDI controller to link them instantly. This allows you to use your pedal’s current settings without any hardware reconfiguration. (Note: Click SAVE CONFIGURATION to store your custom layout permanently).
 6. **Done:** Wait for `SPARK: ONLINE` and `PEDAL: READY`.
 
-**`macOS`** build created but `not tested`
+### Run from source on macOS
+
+The app requires Python 3.11, Tk, and the packages in `requirements.txt`. On an
+Apple Silicon Mac with Homebrew:
+
+```bash
+brew install python@3.11 python-tk@3.11
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python "src/1.2.0. Spark 40, Spark 2, Spark Go/SparkMidiBridge_v1.2.0.py"
+```
+
+Connect Bluetooth MIDI controllers through macOS Audio MIDI Setup before
+launching the bridge. Use the app's Refresh button after connecting or removing
+a MIDI device.
 
 ## 🛠 Hardware Compatibility
 *I am actively looking for testers for other models!*

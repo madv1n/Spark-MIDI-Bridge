@@ -1,0 +1,8 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+build/
+dist/
+*.spec
+spark_config.json

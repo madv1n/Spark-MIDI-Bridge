@@ -5,6 +5,7 @@ import threading
 import asyncio
 import pygame.midi
 import multiprocessing
+import queue
 import time
 import webbrowser
 
@@ -20,6 +21,7 @@ except ImportError:
 from bleak import BleakScanner, BleakClient
 import tkinter as tk
 from tkinter import ttk, messagebox
+from midi_runtime import MidiRuntime
 
 # Configuration
 CONFIG_FILE = "spark_config.json"
@@ -51,19 +53,25 @@ class SparkMidiApp:
         self.is_go_or_mini = False
         self.detected_model_name = "SPARK"
         
-        self.midi_usb_in = None    
         self.midi_bt_port = None   
         self.last_radar_time = 0
-        
-        pygame.midi.init()
+        self.midi_runtime = MidiRuntime(pygame.midi)
+        self.midi_selection = "Auto-detect"
+        self.ui_queue = queue.Queue()
+        self.closing = False
+
         self.load_config()
         self.setup_ui()
+        self.root.after(20, self.drain_ui_queue)
+        self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         
         self.loop = asyncio.new_event_loop()
         threading.Thread(target=self.start_async_loop, daemon=True).start()
         
-        asyncio.run_coroutine_threadsafe(self.spark_search_loop(), self.loop)
-        asyncio.run_coroutine_threadsafe(self.midi_search_loop(), self.loop)
+        self.background_tasks = [
+            asyncio.run_coroutine_threadsafe(self.spark_search_loop(), self.loop),
+            asyncio.run_coroutine_threadsafe(self.midi_search_loop(), self.loop),
+        ]
 
     def build_spark_packet(self, cmd_bytes):
         """
@@ -135,7 +143,20 @@ class SparkMidiApp:
         self.log_box = tk.Text(main, height=8, font=("Consolas", 9), state="disabled", bg="white")
         self.log_box.pack(padx=10, pady=10, fill="both", expand=True)
 
-    def log(self, msg): self.root.after(0, lambda: self._log(msg))
+    def post_ui(self, callback):
+        self.ui_queue.put(callback)
+
+    def drain_ui_queue(self):
+        while True:
+            try:
+                callback = self.ui_queue.get_nowait()
+            except queue.Empty:
+                break
+            callback()
+        if not self.closing:
+            self.root.after(20, self.drain_ui_queue)
+
+    def log(self, msg): self.post_ui(lambda m=msg: self._log(m))
     def _log(self, msg):
         self.log_box.config(state="normal")
         self.log_box.insert("end", f"> {msg}\n")
@@ -143,15 +164,16 @@ class SparkMidiApp:
         self.log_box.config(state="disabled")
 
     def on_midi_change(self, event=None):
-        if self.midi_usb_in:
-            try: self.midi_usb_in.close()
-            except: pass
-            self.midi_usb_in = None
-        self.midi_bt_port = None
         selection = self.midi_device_var.get()
+        self.midi_selection = selection
         self.log(f"Manual select: {selection}")
-        self.root.after(0, lambda: self.midi_lbl.config(text="CONNECTING...", fg="#f39c12"))
+        self.midi_lbl.config(text="CONNECTING...", fg="#f39c12")
         self.last_radar_time = 0
+        asyncio.run_coroutine_threadsafe(self.reset_midi_input(), self.loop)
+
+    async def reset_midi_input(self):
+        self.midi_runtime.close_input()
+        self.midi_bt_port = None
 
     def start_learn(self, preset_idx):
         if self.learn_target == preset_idx:
@@ -183,8 +205,8 @@ class SparkMidiApp:
             self.midi_map[midi_key] = target_name
             self.log(f"SUCCESS: {midi_key} -> {target_name}")
             self.learn_target = None
-            self.root.after(0, self.reset_learn_buttons)
-            self.root.after(0, self.refresh_ui_labels)
+            self.post_ui(self.reset_learn_buttons)
+            self.post_ui(self.refresh_ui_labels)
             return
         target_preset = self.midi_map.get(midi_key)
         if not target_preset and msg_type == "PC": target_preset = f"Preset {(data1 % 4) + 1}"
@@ -218,31 +240,15 @@ class SparkMidiApp:
 
     def refresh_midi_list(self):
         self.log("Refreshing MIDI system...")
-        self.root.after(0, lambda: self.midi_lbl.config(text="PEDAL: DISCONNECTED", fg="#c0392b"))
-        
-        if self.midi_usb_in:
-            try: self.midi_usb_in.close()
-            except: pass
-            self.midi_usb_in = None
-        self.midi_bt_port = None
-        
-        pygame.midi.quit()
-        pygame.midi.init()
-        
+        self.midi_lbl.config(text="PEDAL: DISCONNECTED", fg="#c0392b")
         current_sel = self.midi_device_var.get()
-        asyncio.run_coroutine_threadsafe(self._scan_midi_devices(current_sel), self.loop)
+        self.midi_selection = current_sel
+        asyncio.run_coroutine_threadsafe(self._scan_midi_devices(current_sel, restart=True), self.loop)
 
-    async def _scan_midi_devices(self, saved_sel): 
-        if self.midi_usb_in:
-            try: self.midi_usb_in.close()
-            except: pass
-            self.midi_usb_in = None
-        pygame.midi.quit()
-        pygame.midi.init()
-        raw = []
-        for i in range(pygame.midi.get_count()):
-            info = pygame.midi.get_device_info(i)
-            if info and info[2]: raw.append(f"[USB] {info[1].decode().strip()}")
+    async def _scan_midi_devices(self, saved_sel, restart=False):
+        if restart:
+            self.midi_runtime.restart()
+        raw = [f"[USB] {name}" for _, name in self.midi_runtime.input_devices()]
         if IS_WINDOWS:
             try:
                 selector = midi.MidiInPort.get_device_selector()
@@ -251,19 +257,24 @@ class SparkMidiApp:
                     if d.name: raw.append(f"[BLE] {d.name.strip()}")
             except: pass
         final_list = ["Auto-detect"] + list(dict.fromkeys(raw))
-        self.root.after(0, lambda: self.midi_combo.config(values=final_list))
-        self.root.after(0, lambda: self.midi_combo.set(saved_sel if saved_sel in final_list else "Auto-detect"))
+        selected = saved_sel if saved_sel in final_list else "Auto-detect"
+        self.midi_selection = selected
+        self.post_ui(lambda values=final_list: self.midi_combo.config(values=values))
+        self.post_ui(lambda value=selected: self.midi_combo.set(value))
         self.log(f"Scan complete. Found {len(final_list)-1} devices.")
 
     def start_async_loop(self):
         asyncio.set_event_loop(self.loop)
+        self.midi_runtime.start()
         self.loop.run_forever()
 
     async def spark_search_loop(self):
         while True:
             if not self.spark_client or not self.spark_client.is_connected:
                 try:
-                    self.spark_lbl.config(text="SPARK: SCANNING", fg="#f39c12")
+                    if self.spark_client:
+                        await self.disconnect_spark()
+                    self.post_ui(lambda: self.spark_lbl.config(text="SPARK: SCANNING", fg="#f39c12"))
                     devs = await BleakScanner.discover(timeout=4.0)
                     target = None
                     for d in devs:
@@ -282,7 +293,7 @@ class SparkMidiApp:
                         else: self.detected_model_name = "SPARK 40"
                         
                         self.log(f"Connecting to: {target.name} ({self.detected_model_name})...")
-                        self.spark_client = BleakClient(target.address)
+                        self.spark_client = BleakClient(target)
                         await self.spark_client.connect()
                         
                         self.seq = 0x20
@@ -295,18 +306,35 @@ class SparkMidiApp:
                         except Exception as ne:
                             self.log(f"Notify init: {ne}")
                             
-                        self.spark_lbl.config(text=f"{self.detected_model_name}: ONLINE", fg="#27ae60")
+                        model_name = self.detected_model_name
+                        self.post_ui(lambda name=model_name: self.spark_lbl.config(text=f"{name}: ONLINE", fg="#27ae60"))
                         self.log(f"Connection established with {self.detected_model_name}.")
                 except Exception as e:
-                    self.spark_lbl.config(text="SPARK: DISCONNECTED", fg="#c0392b")
-                    self.spark_client = None
+                    self.log(f"Spark connection error: {e}")
+                    await self.disconnect_spark()
+                    self.post_ui(lambda: self.spark_lbl.config(text="SPARK: DISCONNECTED", fg="#c0392b"))
             await asyncio.sleep(5)
+
+    async def disconnect_spark(self):
+        client = self.spark_client
+        self.spark_client = None
+        if not client:
+            return
+        try:
+            if client.is_connected:
+                try:
+                    await client.stop_notify(NOTIFY_UUID)
+                except Exception:
+                    pass
+                await client.disconnect()
+        except Exception as error:
+            self.log(f"Spark disconnect error: {error}")
 
     async def midi_search_loop(self):
         self.last_radar_time = 0 
 
         while True:
-            selection = self.midi_device_var.get()
+            selection = self.midi_selection
             clean_sel = selection.replace("[USB] ", "").replace("[BLE] ", "").lower().strip()
             
             current_time = time.time()
@@ -315,40 +343,35 @@ class SparkMidiApp:
                 self.last_radar_time = current_time
 
             # --- 1. USB Search ---
-            if not self.midi_usb_in and not selection.startswith("[BLE]"):
+            if not self.midi_runtime.input and not selection.startswith("[BLE]"):
                 if run_radar:
-                    pygame.midi.quit()
-                    pygame.midi.init()
-                    
-                    for i in range(pygame.midi.get_count()):
-                        info = pygame.midi.get_device_info(i)
-                        if info and info[2]:
-                            name = info[1].decode().strip().replace('\x00', '')
-                            is_match = False
-                            if selection == "Auto-detect":
-                                if any(k in name.lower() for k in ["foot", "midi", "m-vave", "sinco"]): is_match = True
-                            elif clean_sel in name.lower(): is_match = True
-                            
-                            if is_match:
-                                try:
-                                    self.midi_usb_in = pygame.midi.Input(i)
-                                    self.current_usb_name = name
-                                    self.root.after(0, lambda n=name: self.midi_lbl.config(text="PEDAL: USB READY", fg="#27ae60"))
-                                    self.log(f"Linked USB: {name}")
-                                    break
-                                except: pass
+                    for index, name in self.midi_runtime.input_devices():
+                        is_match = False
+                        if selection == "Auto-detect":
+                            if any(k in name.lower() for k in ["foot", "midi", "m-vave", "sinco", "chocolate"]):
+                                is_match = True
+                        elif clean_sel in name.lower():
+                            is_match = True
+
+                        if is_match:
+                            try:
+                                self.midi_runtime.open_input(index)
+                                self.current_usb_name = name
+                                self.post_ui(lambda: self.midi_lbl.config(text="PEDAL: MIDI READY", fg="#27ae60"))
+                                self.log(f"Linked MIDI: {name}")
+                                break
+                            except Exception as error:
+                                self.log(f"MIDI open error: {error}")
 
             # --- 2. USB Reading and Radar ---
-            if self.midi_usb_in:
+            if self.midi_runtime.input:
                 try:
-                    if self.midi_usb_in.poll():
-                        for event in self.midi_usb_in.read(10):
-                            asyncio.run_coroutine_threadsafe(self.process_midi_input(event[0][0], event[0][1]), self.loop)
-                except:
-                    try: self.midi_usb_in.close()
-                    except: pass
-                    self.midi_usb_in = None
-                    self.root.after(0, lambda: self.midi_lbl.config(text="PEDAL: DISCONNECTED", fg="#c0392b"))
+                    for event in self.midi_runtime.read(10):
+                        await self.process_midi_input(event[0][0], event[0][1])
+                except Exception as error:
+                    self.log(f"MIDI read error: {error}")
+                    self.midi_runtime.close_input()
+                    self.post_ui(lambda: self.midi_lbl.config(text="PEDAL: DISCONNECTED", fg="#c0392b"))
 
                 if IS_WINDOWS and hasattr(self, 'current_usb_name') and run_radar:
                     try:
@@ -356,14 +379,13 @@ class SparkMidiApp:
                         all_devs = await enumeration.DeviceInformation.find_all_async(selector)
                         still_alive = any(self.current_usb_name in d.name for d in all_devs if d.name)
                         if not still_alive:
-                            self.midi_usb_in.close()
-                            self.midi_usb_in = None
-                            self.root.after(0, lambda: self.midi_lbl.config(text="PEDAL: DISCONNECTED", fg="#c0392b"))
+                            self.midi_runtime.close_input()
+                            self.post_ui(lambda: self.midi_lbl.config(text="PEDAL: DISCONNECTED", fg="#c0392b"))
                             self.log("USB cable disconnected.")
                     except: pass
 
             # --- 3. BT Search and Radar ---
-            if IS_WINDOWS and not self.midi_usb_in and not selection.startswith("[USB]"):
+            if IS_WINDOWS and not self.midi_runtime.input and not selection.startswith("[USB]"):
                 if not self.midi_bt_port:
                     if run_radar:
                         try:
@@ -379,7 +401,7 @@ class SparkMidiApp:
                                 if port:
                                     self.midi_bt_port = port
                                     self.midi_bt_port.add_message_received(self.on_bt_midi_message)
-                                    self.root.after(0, lambda: self.midi_lbl.config(text="PEDAL: BLE READY", fg="#27ae60"))
+                                    self.post_ui(lambda: self.midi_lbl.config(text="PEDAL: BLE READY", fg="#27ae60"))
                                     self.log(f"Linked BLE: {target.name}")
                         except: pass
                 else:
@@ -389,13 +411,36 @@ class SparkMidiApp:
                             current_id = self.midi_bt_port.device_id
                             if not any(d.id == current_id for d in bt_devs):
                                 self.midi_bt_port = None
-                                self.root.after(0, lambda: self.midi_lbl.config(text="PEDAL: DISCONNECTED", fg="#c0392b"))
+                                self.post_ui(lambda: self.midi_lbl.config(text="PEDAL: DISCONNECTED", fg="#c0392b"))
                                 self.log("BLE connection lost.")
                         except:
                             self.midi_bt_port = None
-                            self.root.after(0, lambda: self.midi_lbl.config(text="PEDAL: DISCONNECTED", fg="#c0392b"))
+                            self.post_ui(lambda: self.midi_lbl.config(text="PEDAL: DISCONNECTED", fg="#c0392b"))
 
             await asyncio.sleep(0.1)
+
+    def on_close(self):
+        if self.closing:
+            return
+        self.closing = True
+        shutdown_future = asyncio.run_coroutine_threadsafe(self.shutdown(), self.loop)
+
+        def wait_for_shutdown():
+            if shutdown_future.done():
+                self.loop.call_soon_threadsafe(self.loop.stop)
+                self.root.destroy()
+            else:
+                self.root.after(50, wait_for_shutdown)
+
+        wait_for_shutdown()
+
+    async def shutdown(self):
+        for task in self.background_tasks:
+            task.cancel()
+        await asyncio.sleep(0)
+        self.midi_runtime.shutdown()
+        self.midi_bt_port = None
+        await self.disconnect_spark()
 
     def load_config(self):
         if os.path.exists(CONFIG_FILE):
